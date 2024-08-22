@@ -1,4 +1,5 @@
 /app/src/main/java/com/buntod/ems/EmsBackendApplication.java
+/app/src/main/java/com/buntod/ems/controller/AppController.java
 /app/src/main/java/com/buntod/ems/controller/EmployeeController.java
 /app/src/main/java/com/buntod/ems/dto/EmployeeDTO.java
 /app/src/main/java/com/buntod/ems/entity/Employee.java

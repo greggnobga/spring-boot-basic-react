@@ -28,7 +28,7 @@ public class EmployeeServiceImplementation implements EmployeeService {
          /** Check the respository if email exist. */
          boolean present = employeeRepository.findByEmail(employee.getEmail()).isPresent();
 
-        /** Then conditionally test the result is true. */
+        /** Then conditionally test the result if false. */
         if (present) {
             /** And return an exception if proven. */
             throw new ResourceExistException("Email is already in use.");
