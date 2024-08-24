@@ -1,15 +1,33 @@
+/** Vendor. */
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
-const Employees = () => {
+const EmployeeList = () => {
+    /** Employee arrray. */
     const employees = [
         { id: 1, firsName: 'Reijo', lastName: 'N', email: 'reijo@buntod.com' },
         { id: 2, firsName: 'Gregg', lastName: 'N', email: 'gregg@buntod.com' },
         { id: 3, firsName: 'Grigor', lastName: 'N', email: 'grigor@buntod.com' },
         { id: 4, firsName: 'Orion', lastName: 'N', email: 'orion@buntod.com' },
     ];
+
+    /** Use navigate. */
+    const navigator = useNavigate();
+
+    /** Add employee handler. */
+    const addEmployeeHandler = () => {
+        navigator('/add-employee');
+    };
+
+    /** Return something. */
     return (
         <div class='relative overflow-x-auto'>
-            <button className='bg-sky-500 p-2 my-4 shadow-md text-slate-50 rounded hover:bg-sky-600 hover:scale-95'>Add Employee </button>
+            <h1 class='text-slate-700 text-center font-bold text-3xl'>List Of Employees</h1>
+            <button
+                className='bg-sky-500 py-2 px-4 my-4 shadow-md text-slate-50 rounded hover:bg-sky-600 hover:scale-95'
+                onClick={addEmployeeHandler}>
+                Add Employee
+            </button>
             <table class='w-full text-sm text-left rtl:text-right text-gray-800 shadow-md'>
                 <thead class='text-xs text-slate-50 uppercase bg-rose-500'>
                     <tr>
@@ -49,4 +67,4 @@ const Employees = () => {
     );
 };
 
-export default Employees;
+export default EmployeeList;

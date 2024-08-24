@@ -10,7 +10,7 @@ const Header = () => {
                     <Link to='/'>Employee Managment System</Link>
                 </div>
                 <div>
-                    <Link to='/employees'>Employees</Link>
+                    <Link to='/list-employee'>Employee List</Link>
                 </div>
             </nav>
         </div>

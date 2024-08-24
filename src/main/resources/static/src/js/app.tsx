@@ -5,7 +5,8 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import Layout from '$components/ui/layout';
 import Scroll from '$components/ui/scroll';
 import Home from '$components/home';
-import Employees from '$components/employees';
+import EmployeeList from '$components/employee/list-employee';
+import EmployeeAdd from '$components/employee/add-employee';
 
 /** Main. */
 const App = () => {
@@ -16,7 +17,8 @@ const App = () => {
                 <Routes>
                     <Route path='/' element={<Layout />}>
                         <Route path='/' element={<Home />} />
-                        <Route path='/employees' element={<Employees />} />
+                        <Route path='/list-employee' element={<EmployeeList />} />
+                        <Route path='/add-employee' element={<EmployeeAdd />} />
                     </Route>
                 </Routes>
             </Scroll>

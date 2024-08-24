@@ -48,6 +48,8 @@ export default defineConfig({
             $css: '/src/css',
             $js: '/src/js',
             $components: '/src/js/components',
+            $hooks: '/src/js/hooks',
+            $store: '/src/js/store',
         },
     },
 });
