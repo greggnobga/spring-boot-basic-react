@@ -45,6 +45,7 @@ export default defineConfig({
     },
     resolve: {
         alias: {
+            $lib: '/src',
             $css: '/src/css',
             $js: '/src/js',
             $components: '/src/js/components',

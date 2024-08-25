@@ -12,6 +12,7 @@ type Error<T> = {
 /** Employee type. */
 type Employee = {
     loading: boolean;
+    id: string;
     firstName: string;
     lastName: string;
     email: string;
@@ -20,6 +21,7 @@ type Employee = {
 
 /** Employee input type. */
 type InputEmployee = {
+    id: string;
     firstName: string;
     lastName: string;
     email: string;
@@ -29,18 +31,19 @@ type InputEmployee = {
 const initialState: Employee = {
     loading: false,
     status: 200,
+    id: '',
     firstName: '',
     lastName: '',
     email: '',
 };
 
 /** Login request. */
-export const employeeAddRequest = createAsyncThunk<any, InputEmployee, { rejectValue: Error<any> }>(
-    'employee/add',
+export const employeeUpdateRequest = createAsyncThunk<any, InputEmployee, { rejectValue: Error<any> }>(
+    'employee/update',
     async (inputData, { rejectWithValue }) => {
         try {
             /** Deconstruct input data. */
-            const { firstName, lastName, email } = inputData;
+            const { id, firstName, lastName, email } = inputData;
 
             /** Prepare form data. */
             let form_data = new FormData();
@@ -54,8 +57,8 @@ export const employeeAddRequest = createAsyncThunk<any, InputEmployee, { rejectV
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                method: 'POST',
-                url: `/api/employees`,
+                method: 'PUT',
+                url: `/api/employees/${id}`,
                 data: form_data,
             });
 
@@ -85,26 +88,28 @@ export const employeeAddRequest = createAsyncThunk<any, InputEmployee, { rejectV
 );
 
 /** Export slice. */
-export const employeeAdd = createSlice({
-    name: 'employeeAdd',
+export const employeeUpdate = createSlice({
+    name: 'employeeUpdate',
     initialState: initialState,
     reducers: {},
     extraReducers: (builder) => {
         /** Detail request case. */
-        builder.addCase(employeeAddRequest.pending, (state) => {
+        builder.addCase(employeeUpdateRequest.pending, (state) => {
             state.loading = true;
         });
 
-        builder.addCase(employeeAddRequest.fulfilled, (state, action: any) => {
+        builder.addCase(employeeUpdateRequest.fulfilled, (state, action: any) => {
             state.loading = false;
+            state.id = action.payload.id;
             state.firstName = action.payload.firstName;
             state.lastName = action.payload.lastName;
             state.email = action.payload.email;
             state.status = action.payload.status;
         });
 
-        builder.addCase(employeeAddRequest.rejected, (state, action: any) => {
+        builder.addCase(employeeUpdateRequest.rejected, (state, action: any) => {
             state.loading = false;
+            state.id = action.payload.id;
             state.firstName = action.payload.firstName;
             state.lastName = action.payload.lastName;
             state.email = action.payload.email;
@@ -114,4 +119,4 @@ export const employeeAdd = createSlice({
 });
 
 /** Export something. */
-export default employeeAdd.reducer;
+export default employeeUpdate.reducer;

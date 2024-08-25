@@ -51,7 +51,7 @@ const EmployeeList = () => {
     /** Return something. */
     return (
         <div className='relative overflow-x-auto'>
-            <h1 className='text-slate-700 text-center font-bold text-3xl'>List Of Employees</h1>
+            <h1 className='text-slate-700 text-center font-bold text-3xl uppercase'>List Of Employees</h1>
             <button
                 className='bg-sky-500 py-2 px-4 my-4 shadow-md text-slate-50 rounded hover:bg-sky-600 hover:scale-95'
                 onClick={addEmployeeHandler}>

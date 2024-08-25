@@ -1,5 +1,5 @@
 /** Vendor. */
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 /** Hooks. */
 import useValidate from '$hooks/use-validate';
@@ -7,8 +7,13 @@ import { useAppDispatch, useAppSelector } from '$hooks/use-rtk';
 
 /** Action. */
 import { employeeAddRequest } from '$store/feature/employee/add-slice';
+import { employeeUpdateRequest } from '$store/feature/employee/update-slice';
 
 const Employee = () => {
+    /** Use location. */
+    const location = useLocation();
+    const { id, fName, lName, eAddress, action } = location.state || {};
+
     /** Map html element to validate hook. */
     const {
         value: firstName,
@@ -70,7 +75,14 @@ const Employee = () => {
         }
 
         /** Dispatch action. */
-        dispatch(employeeAddRequest({ firstName, lastName, email }));
+        if (action === 'update') {
+            dispatch(employeeUpdateRequest({ id, firstName, lastName, email }));
+        } else {
+            dispatch(employeeAddRequest({ firstName, lastName, email }));
+        }
+
+        // dispatch(employeeAddRequest({ firstName, lastName, email }));
+        console.log(firstName, lastName, email, action);
 
         /** Reset input. */
         firstNameInputReset();
@@ -81,10 +93,16 @@ const Employee = () => {
         navigator('/employees');
     };
 
+    /** Cancel handler. */
+    const cancelHandler = () => {
+        /** Back to list of employees. */
+        navigator('/employees');
+    };
+
     /** Return something. */
     return (
         <div className='container mx-auto bg-rose-50 border border-rose-100 px-4 py-2'>
-            <h1 className='p-2 text-center font-bold text-2xl'>Add Employee</h1>
+            <h1 className='p-2 text-center font-bold text-2xl uppercase'>{action} Employee</h1>
             <div className='mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6'>
                 <div className='col-span-full'>
                     <label htmlFor='firstname' className='block text-sm font-medium leading-6 text-gray-900'>
@@ -98,7 +116,7 @@ const Employee = () => {
                             id='firstName'
                             name='firstName'
                             type='firstName'
-                            value={firstName}
+                            value={firstName ? firstName : fName}
                             onChange={firstNameChangeHandler}
                             onBlur={firstNameBlurHandler}
                             autoComplete='off'
@@ -119,7 +137,7 @@ const Employee = () => {
                             id='lastName'
                             name='lastName'
                             type='lastName'
-                            value={lastName}
+                            value={lastName ? lastName : lName}
                             onChange={lastNameChangeHandler}
                             onBlur={lastNameBlurHandler}
                             autoComplete='off'
@@ -140,7 +158,7 @@ const Employee = () => {
                             id='email'
                             name='email'
                             type='email'
-                            value={email}
+                            value={email ? email : eAddress}
                             onChange={emailChangeHandler}
                             onBlur={emailBlurHandler}
                             autoComplete='off'
@@ -151,14 +169,14 @@ const Employee = () => {
             </div>
 
             <div className='mt-6 flex items-center justify-end gap-x-6'>
-                <button type='button' className='text-sm font-semibold leading-6 text-gray-900'>
+                <button type='button' className='text-sm font-semibold leading-6 text-gray-900' onClick={cancelHandler}>
                     Cancel
                 </button>
                 <button
                     type='submit'
                     className='rounded-md bg-rose-600 px-6 py-2 text-sm font-semibold text-white shadow-sm hover:bg-rose-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose-600'
                     onClick={submitHandler}>
-                    {action}
+                    Save
                 </button>
             </div>
         </div>

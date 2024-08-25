@@ -11,15 +11,17 @@ type Error<T> = {
 
 /** Employee type. */
 type Employee = {
-    firstname: string;
-    lastname: string;
+    loading: boolean;
+    firstName: string;
+    lastName: string;
     email: string;
+    status: number;
 };
 
 /** Employee input type. */
 type InputEmployee = {
-    firstname: string;
-    lastname: string;
+    firstName: string;
+    lastName: string;
     email: string;
 };
 
@@ -27,8 +29,8 @@ type InputEmployee = {
 const initialState: Employee = {
     loading: false,
     status: 200,
-    firstname: '',
-    lastname: '',
+    firstName: '',
+    lastName: '',
     email: '',
 };
 
@@ -38,13 +40,13 @@ export const employeeAddRequest = createAsyncThunk<any, InputEmployee, { rejectV
     async (inputData, { rejectWithValue }) => {
         try {
             /** Deconstruct input data. */
-            const { firstname, lastname, email } = inputData;
+            const { firstName, lastName, email } = inputData;
 
             /** Prepare form data. */
             let form_data = new FormData();
 
-            form_data.append('firstname', firstname as string);
-            form_data.append('lastname', lastname as string);
+            form_data.append('firstName', firstName as string);
+            form_data.append('lastName', lastName as string);
             form_data.append('email', email as string);
 
             /** Request data from backend. */
@@ -95,17 +97,17 @@ export const employeeAdd = createSlice({
 
         builder.addCase(employeeAddRequest.fulfilled, (state, action: any) => {
             state.loading = false;
-            state.technical = action.payload.firstName;
-            state.fundamental = action.payload.lastName;
-            state.updated = action.payload.email;
+            state.firstName = action.payload.firstName;
+            state.lastName = action.payload.lastName;
+            state.email = action.payload.email;
             state.status = action.payload.status;
         });
 
         builder.addCase(employeeAddRequest.rejected, (state, action: any) => {
             state.loading = false;
-            state.technical = action.payload.firstName;
-            state.fundamental = action.payload.lastName;
-            state.updated = action.payload.email;
+            state.firstName = action.payload.firstName;
+            state.lastName = action.payload.lastName;
+            state.email = action.payload.email;
             state.status = action.payload.status;
         });
     },

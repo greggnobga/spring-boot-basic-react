@@ -16,12 +16,17 @@
         "noEmit": true,
         "jsx": "react-jsx",
         "baseUrl": ".",
+        "useUnknownInCatchVariables": false,
         "paths": {
-            "$lib/*": ["src/js/*"]
-        },
-        "useUnknownInCatchVariables": false
+            "$lib/*": ["/src/*"],
+            "$css/*": ["./src/css/*"],
+            "$js/*": ["./src/js/*"],
+            "$components/*": ["./src/js/components/*"],
+            "$hooks/*": ["./src/js/hooks/*"],
+            "$store/*": ["./src/js/store/*"]
+        }
     },
-    "include": ["src/assets/js"],
+    "include": ["src"],
     "exclude": ["node_modules", "**/*.test.ts"],
     "references": [{ "path": "./tsconfig.node.json" }]
 }

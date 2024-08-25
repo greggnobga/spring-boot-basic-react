@@ -1,7 +1,7 @@
 import React from 'react';
 
 const Home = () => {
-    return <div>Home page, reload imported axios.</div>;
+    return <div className='uppercase'>Home page</div>;
 };
 
 export default Home;

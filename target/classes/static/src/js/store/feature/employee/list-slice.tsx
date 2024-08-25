@@ -11,56 +11,42 @@ type Error<T> = {
 
 /** Employee type. */
 type Employee = {
-    loading: boolean;
+    id: number;
     firstName: string;
     lastName: string;
     email: string;
+};
+
+/** Employee List type. */
+type Employees = {
+    loading: boolean;
+    employees: Employee[];
     status: number;
 };
 
-/** Employee input type. */
-type InputEmployee = {
-    firstName: string;
-    lastName: string;
-    email: string;
-};
-
 /** Set inital state. */
-const initialState: Employee = {
+const initialState: Employees = {
     loading: false,
     status: 200,
-    firstName: '',
-    lastName: '',
-    email: '',
+    employees: [],
 };
 
 /** Login request. */
-export const employeeAddRequest = createAsyncThunk<any, InputEmployee, { rejectValue: Error<any> }>(
-    'employee/add',
+export const employeeListRequest = createAsyncThunk<any, void, { rejectValue: Error<any> }>(
+    'employee/list',
     async (inputData, { rejectWithValue }) => {
         try {
-            /** Deconstruct input data. */
-            const { firstName, lastName, email } = inputData;
-
-            /** Prepare form data. */
-            let form_data = new FormData();
-
-            form_data.append('firstName', firstName as string);
-            form_data.append('lastName', lastName as string);
-            form_data.append('email', email as string);
-
             /** Request data from backend. */
             const { data, status } = await axios({
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                method: 'POST',
-                url: `/api/employees`,
-                data: form_data,
+                method: 'GET',
+                url: '/api/employees',
             });
 
             /** Return something. */
-            return { status, ...(data as unknown as Record<any, unknown>) };
+            return { status, data };
         } catch (error: any) {
             /** Capture error details */
             if (error.response) {
@@ -85,33 +71,29 @@ export const employeeAddRequest = createAsyncThunk<any, InputEmployee, { rejectV
 );
 
 /** Export slice. */
-export const employeeAdd = createSlice({
-    name: 'employeeAdd',
+export const employeeList = createSlice({
+    name: 'employeeList',
     initialState: initialState,
     reducers: {},
     extraReducers: (builder) => {
         /** Detail request case. */
-        builder.addCase(employeeAddRequest.pending, (state) => {
+        builder.addCase(employeeListRequest.pending, (state) => {
             state.loading = true;
         });
 
-        builder.addCase(employeeAddRequest.fulfilled, (state, action: any) => {
+        builder.addCase(employeeListRequest.fulfilled, (state, action: any) => {
             state.loading = false;
-            state.firstName = action.payload.firstName;
-            state.lastName = action.payload.lastName;
-            state.email = action.payload.email;
+            state.employees = action.payload.data;
             state.status = action.payload.status;
         });
 
-        builder.addCase(employeeAddRequest.rejected, (state, action: any) => {
+        builder.addCase(employeeListRequest.rejected, (state, action: any) => {
             state.loading = false;
-            state.firstName = action.payload.firstName;
-            state.lastName = action.payload.lastName;
-            state.email = action.payload.email;
+            state.employees = action.payload.data;
             state.status = action.payload.status;
         });
     },
 });
 
 /** Export something. */
-export default employeeAdd.reducer;
+export default employeeList.reducer;

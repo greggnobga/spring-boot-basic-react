@@ -1,4 +1,5 @@
-import React from 'react';
+/** Vendor. */
+import { useNavigate, useLocation } from 'react-router-dom';
 
 /** Hooks. */
 import useValidate from '$hooks/use-validate';
@@ -6,8 +7,13 @@ import { useAppDispatch, useAppSelector } from '$hooks/use-rtk';
 
 /** Action. */
 import { employeeAddRequest } from '$store/feature/employee/add-slice';
+import { employeeUpdateRequest } from '$store/feature/employee/update-slice';
 
 const Employee = () => {
+    /** Use location. */
+    const location = useLocation();
+    const { id, fName, lName, eAddress, action } = location.state || {};
+
     /** Map html element to validate hook. */
     const {
         value: firstName,
@@ -50,6 +56,9 @@ const Employee = () => {
     /** Use dispatch. */
     const dispatch = useAppDispatch();
 
+    /** Use navigate. */
+    const navigator = useNavigate();
+
     /** Submit handler. */
     const submitHandler = async (event: any) => {
         /** Prevent browser default behaviour */
@@ -57,6 +66,7 @@ const Employee = () => {
 
         /** Change blur state. */
         firstNameBlurHandler();
+        lastNameBlurHandler();
         emailBlurHandler();
 
         /** Check if there is invalid input. */
@@ -65,24 +75,40 @@ const Employee = () => {
         }
 
         /** Dispatch action. */
-        dispatch(employeeAddRequest({ firstName, lastName, email }));
+        if (action === 'update') {
+            dispatch(employeeUpdateRequest({ id, firstName, lastName, email }));
+        } else {
+            dispatch(employeeAddRequest({ firstName, lastName, email }));
+        }
+
+        // dispatch(employeeAddRequest({ firstName, lastName, email }));
+        console.log(firstName, lastName, email, action);
 
         /** Reset input. */
         firstNameInputReset();
         lastNameInputReset();
         emailInputReset();
+
+        /** Send to list of employees. */
+        navigator('/employees');
+    };
+
+    /** Cancel handler. */
+    const cancelHandler = () => {
+        /** Back to list of employees. */
+        navigator('/employees');
     };
 
     /** Return something. */
     return (
-        <div class='container mx-auto bg-rose-50 border border-rose-100 px-4 py-2'>
-            <h1 class='p-2 text-center font-bold text-2xl'>Add Employee</h1>
-            <div class='mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6'>
-                <div class='col-span-full'>
-                    <label for='firstname' class='block text-sm font-medium leading-6 text-gray-900'>
+        <div className='container mx-auto bg-rose-50 border border-rose-100 px-4 py-2'>
+            <h1 className='p-2 text-center font-bold text-2xl uppercase'>{action} Employee</h1>
+            <div className='mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6'>
+                <div className='col-span-full'>
+                    <label htmlFor='firstname' className='block text-sm font-medium leading-6 text-gray-900'>
                         First Name
                     </label>
-                    <div class='mt-2'>
+                    <div className='mt-2'>
                         <input
                             className={`block w-full rounded-md border-0 px-2 py-1.5 text-gray-900 shadow-sm placeholder:text-gray-400 focus:ring-0 focus:none sm:text-sm sm:leading-6 form-input ${
                                 firstNameHasError ? 'border border-red-500' : ''
@@ -90,7 +116,7 @@ const Employee = () => {
                             id='firstName'
                             name='firstName'
                             type='firstName'
-                            value={firstName}
+                            value={firstName ? firstName : fName}
                             onChange={firstNameChangeHandler}
                             onBlur={firstNameBlurHandler}
                             autoComplete='off'
@@ -99,11 +125,11 @@ const Employee = () => {
                     </div>
                 </div>
 
-                <div class='col-span-full'>
-                    <label for='lastname' class='block text-sm font-medium leading-6 text-gray-900'>
+                <div className='col-span-full'>
+                    <label htmlFor='lastname' className='block text-sm font-medium leading-6 text-gray-900'>
                         Last Name
                     </label>
-                    <div class='mt-2'>
+                    <div className='mt-2'>
                         <input
                             className={`block w-full rounded-md border-0 px-2 py-1.5 text-gray-900 shadow-sm placeholder:text-gray-400 focus:ring-0 focus:none sm:text-sm sm:leading-6 form-input ${
                                 lastNameHasError ? 'border border-red-500' : ''
@@ -111,7 +137,7 @@ const Employee = () => {
                             id='lastName'
                             name='lastName'
                             type='lastName'
-                            value={lastName}
+                            value={lastName ? lastName : lName}
                             onChange={lastNameChangeHandler}
                             onBlur={lastNameBlurHandler}
                             autoComplete='off'
@@ -120,11 +146,11 @@ const Employee = () => {
                     </div>
                 </div>
 
-                <div class='col-span-full'>
-                    <label for='email' class='block text-sm font-medium leading-6 text-gray-900'>
+                <div className='col-span-full'>
+                    <label htmlFor='email' className='block text-sm font-medium leading-6 text-gray-900'>
                         Email
                     </label>
-                    <div class='mt-2'>
+                    <div className='mt-2'>
                         <input
                             className={`block w-full rounded-md border-0 px-2 py-1.5 text-gray-900 shadow-sm placeholder:text-gray-400 focus:ring-0 focus:none sm:text-sm sm:leading-6 form-input ${
                                 emailHasError ? 'border border-red-500' : ''
@@ -132,7 +158,7 @@ const Employee = () => {
                             id='email'
                             name='email'
                             type='email'
-                            value={email}
+                            value={email ? email : eAddress}
                             onChange={emailChangeHandler}
                             onBlur={emailBlurHandler}
                             autoComplete='off'
@@ -142,13 +168,13 @@ const Employee = () => {
                 </div>
             </div>
 
-            <div class='mt-6 flex items-center justify-end gap-x-6'>
-                <button type='button' class='text-sm font-semibold leading-6 text-gray-900'>
+            <div className='mt-6 flex items-center justify-end gap-x-6'>
+                <button type='button' className='text-sm font-semibold leading-6 text-gray-900' onClick={cancelHandler}>
                     Cancel
                 </button>
                 <button
                     type='submit'
-                    class='rounded-md bg-rose-600 px-6 py-2 text-sm font-semibold text-white shadow-sm hover:bg-rose-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose-600'
+                    className='rounded-md bg-rose-600 px-6 py-2 text-sm font-semibold text-white shadow-sm hover:bg-rose-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose-600'
                     onClick={submitHandler}>
                     Save
                 </button>

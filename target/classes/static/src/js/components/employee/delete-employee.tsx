@@ -1,6 +1,3 @@
-/** Vendor. */
-import { useNavigate } from 'react-router-dom';
-
 /** Hooks. */
 import useValidate from '$hooks/use-validate';
 import { useAppDispatch, useAppSelector } from '$hooks/use-rtk';
@@ -51,9 +48,6 @@ const Employee = () => {
     /** Use dispatch. */
     const dispatch = useAppDispatch();
 
-    /** Use navigate. */
-    const navigator = useNavigate();
-
     /** Submit handler. */
     const submitHandler = async (event: any) => {
         /** Prevent browser default behaviour */
@@ -61,7 +55,6 @@ const Employee = () => {
 
         /** Change blur state. */
         firstNameBlurHandler();
-        lastNameBlurHandler();
         emailBlurHandler();
 
         /** Check if there is invalid input. */
@@ -76,9 +69,6 @@ const Employee = () => {
         firstNameInputReset();
         lastNameInputReset();
         emailInputReset();
-
-        /** Send to list of employees. */
-        navigator('/employees');
     };
 
     /** Return something. */
@@ -158,7 +148,7 @@ const Employee = () => {
                     type='submit'
                     className='rounded-md bg-rose-600 px-6 py-2 text-sm font-semibold text-white shadow-sm hover:bg-rose-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose-600'
                     onClick={submitHandler}>
-                    {action}
+                    Save
                 </button>
             </div>
         </div>
