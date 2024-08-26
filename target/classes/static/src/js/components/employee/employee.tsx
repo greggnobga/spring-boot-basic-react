@@ -6,8 +6,10 @@ import useValidate from '$hooks/use-validate';
 import { useAppDispatch, useAppSelector } from '$hooks/use-rtk';
 
 /** Action. */
+import { employeeListRequest } from '$store/feature/employee/list-slice';
 import { employeeAddRequest } from '$store/feature/employee/add-slice';
 import { employeeUpdateRequest } from '$store/feature/employee/update-slice';
+import { employeeDeleteRequest } from '$store/feature/employee/delete-slice';
 
 const Employee = () => {
     /** Use location. */
@@ -76,110 +78,145 @@ const Employee = () => {
 
         /** Dispatch action. */
         if (action === 'update') {
-            dispatch(employeeUpdateRequest({ id, firstName, lastName, email }));
+            await dispatch(employeeUpdateRequest({ id, firstName, lastName, email }));
         } else {
-            dispatch(employeeAddRequest({ firstName, lastName, email }));
+            await dispatch(employeeAddRequest({ firstName, lastName, email }));
         }
-
-        // dispatch(employeeAddRequest({ firstName, lastName, email }));
-        console.log(firstName, lastName, email, action);
 
         /** Reset input. */
         firstNameInputReset();
         lastNameInputReset();
         emailInputReset();
 
+        /** Update list. */
+        await dispatch(employeeListRequest());
+
+        /** Send to list of employees. */
+        navigator('/employees');
+    };
+
+    /** Delete handler. */
+    const deleteHandler = async () => {
+        await dispatch(employeeDeleteRequest({ id }));
+
+        /** Update list. */
+        await dispatch(employeeListRequest());
+
         /** Send to list of employees. */
         navigator('/employees');
     };
 
     /** Cancel handler. */
-    const cancelHandler = () => {
+    const cancelHandler = async () => {
+        /** Update list. */
+        await dispatch(employeeListRequest());
+
         /** Back to list of employees. */
         navigator('/employees');
     };
 
     /** Return something. */
     return (
-        <div className='container mx-auto bg-rose-50 border border-rose-100 px-4 py-2'>
-            <h1 className='p-2 text-center font-bold text-2xl uppercase'>{action} Employee</h1>
-            <div className='mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6'>
-                <div className='col-span-full'>
-                    <label htmlFor='firstname' className='block text-sm font-medium leading-6 text-gray-900'>
-                        First Name
-                    </label>
-                    <div className='mt-2'>
-                        <input
-                            className={`block w-full rounded-md border-0 px-2 py-1.5 text-gray-900 shadow-sm placeholder:text-gray-400 focus:ring-0 focus:none sm:text-sm sm:leading-6 form-input ${
-                                firstNameHasError ? 'border border-red-500' : ''
-                            }`}
-                            id='firstName'
-                            name='firstName'
-                            type='firstName'
-                            value={firstName ? firstName : fName}
-                            onChange={firstNameChangeHandler}
-                            onBlur={firstNameBlurHandler}
-                            autoComplete='off'
-                        />
-                        {firstNameHasError && <p className={`form-alert ${firstNameInputClasses}`}>Please enter a valid first name.</p>}
+        <>
+            {action === 'delete' ? (
+                <div className='container mx-auto bg-rose-50 border border-rose-100 px-4 py-2'>
+                    <div className='flex flex-wrap flex-row items-center justify-center border border-green-500'>
+                        <p className='pt-6'>Are your sure you want to delete {fName + ' ' + lName}</p>
+                        <div className='mt-6 flex items-center justify-center gap-x-6'>
+                            <button type='button' className='text-sm font-semibold leading-6 text-gray-900' onClick={cancelHandler}>
+                                Cancel
+                            </button>
+                            <button
+                                type='submit'
+                                className='rounded-md bg-rose-600 px-6 py-2 text-sm font-semibold text-white shadow-sm hover:bg-rose-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose-600'
+                                onClick={deleteHandler}>
+                                Confirm
+                            </button>
+                        </div>
                     </div>
                 </div>
+            ) : (
+                <div className='container mx-auto bg-rose-50 border border-rose-100 px-4 py-2'>
+                    <h1 className='p-2 text-center font-bold text-2xl uppercase'>{action} Employee</h1>
+                    <div className='mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6'>
+                        <div className='col-span-full'>
+                            <label htmlFor='firstname' className='block text-sm font-medium leading-6 text-gray-900'>
+                                First Name
+                            </label>
+                            <div className='mt-2'>
+                                <input
+                                    className={`block w-full rounded-md border-0 px-2 py-1.5 text-gray-900 shadow-sm placeholder:text-gray-400 focus:ring-0 focus:none sm:text-sm sm:leading-6 form-input ${
+                                        firstNameHasError ? 'border border-red-500' : ''
+                                    }`}
+                                    id='firstName'
+                                    name='firstName'
+                                    type='firstName'
+                                    value={firstName ? firstName : fName}
+                                    onChange={firstNameChangeHandler}
+                                    onBlur={firstNameBlurHandler}
+                                    autoComplete='off'
+                                />
+                                {firstNameHasError && <p className={`form-alert ${firstNameInputClasses}`}>Please enter a valid first name.</p>}
+                            </div>
+                        </div>
 
-                <div className='col-span-full'>
-                    <label htmlFor='lastname' className='block text-sm font-medium leading-6 text-gray-900'>
-                        Last Name
-                    </label>
-                    <div className='mt-2'>
-                        <input
-                            className={`block w-full rounded-md border-0 px-2 py-1.5 text-gray-900 shadow-sm placeholder:text-gray-400 focus:ring-0 focus:none sm:text-sm sm:leading-6 form-input ${
-                                lastNameHasError ? 'border border-red-500' : ''
-                            }`}
-                            id='lastName'
-                            name='lastName'
-                            type='lastName'
-                            value={lastName ? lastName : lName}
-                            onChange={lastNameChangeHandler}
-                            onBlur={lastNameBlurHandler}
-                            autoComplete='off'
-                        />
-                        {lastNameHasError && <p className={`form-alert ${lastNameInputClasses}`}>Please enter a valid last name.</p>}
+                        <div className='col-span-full'>
+                            <label htmlFor='lastname' className='block text-sm font-medium leading-6 text-gray-900'>
+                                Last Name
+                            </label>
+                            <div className='mt-2'>
+                                <input
+                                    className={`block w-full rounded-md border-0 px-2 py-1.5 text-gray-900 shadow-sm placeholder:text-gray-400 focus:ring-0 focus:none sm:text-sm sm:leading-6 form-input ${
+                                        lastNameHasError ? 'border border-red-500' : ''
+                                    }`}
+                                    id='lastName'
+                                    name='lastName'
+                                    type='lastName'
+                                    value={lastName ? lastName : lName}
+                                    onChange={lastNameChangeHandler}
+                                    onBlur={lastNameBlurHandler}
+                                    autoComplete='off'
+                                />
+                                {lastNameHasError && <p className={`form-alert ${lastNameInputClasses}`}>Please enter a valid last name.</p>}
+                            </div>
+                        </div>
+
+                        <div className='col-span-full'>
+                            <label htmlFor='email' className='block text-sm font-medium leading-6 text-gray-900'>
+                                Email
+                            </label>
+                            <div className='mt-2'>
+                                <input
+                                    className={`block w-full rounded-md border-0 px-2 py-1.5 text-gray-900 shadow-sm placeholder:text-gray-400 focus:ring-0 focus:none sm:text-sm sm:leading-6 form-input ${
+                                        emailHasError ? 'border border-red-500' : ''
+                                    }`}
+                                    id='email'
+                                    name='email'
+                                    type='email'
+                                    value={email ? email : eAddress}
+                                    onChange={emailChangeHandler}
+                                    onBlur={emailBlurHandler}
+                                    autoComplete='off'
+                                />
+                                {emailHasError && <p className={`form-alert ${emailInputClasses}`}>Please enter a valid email.</p>}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className='mt-6 flex items-center justify-end gap-x-6'>
+                        <button type='button' className='text-sm font-semibold leading-6 text-gray-900' onClick={cancelHandler}>
+                            Cancel
+                        </button>
+                        <button
+                            type='submit'
+                            className='rounded-md bg-rose-600 px-6 py-2 text-sm font-semibold text-white shadow-sm hover:bg-rose-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose-600'
+                            onClick={submitHandler}>
+                            Save
+                        </button>
                     </div>
                 </div>
-
-                <div className='col-span-full'>
-                    <label htmlFor='email' className='block text-sm font-medium leading-6 text-gray-900'>
-                        Email
-                    </label>
-                    <div className='mt-2'>
-                        <input
-                            className={`block w-full rounded-md border-0 px-2 py-1.5 text-gray-900 shadow-sm placeholder:text-gray-400 focus:ring-0 focus:none sm:text-sm sm:leading-6 form-input ${
-                                emailHasError ? 'border border-red-500' : ''
-                            }`}
-                            id='email'
-                            name='email'
-                            type='email'
-                            value={email ? email : eAddress}
-                            onChange={emailChangeHandler}
-                            onBlur={emailBlurHandler}
-                            autoComplete='off'
-                        />
-                        {emailHasError && <p className={`form-alert ${emailInputClasses}`}>Please enter a valid email.</p>}
-                    </div>
-                </div>
-            </div>
-
-            <div className='mt-6 flex items-center justify-end gap-x-6'>
-                <button type='button' className='text-sm font-semibold leading-6 text-gray-900' onClick={cancelHandler}>
-                    Cancel
-                </button>
-                <button
-                    type='submit'
-                    className='rounded-md bg-rose-600 px-6 py-2 text-sm font-semibold text-white shadow-sm hover:bg-rose-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose-600'
-                    onClick={submitHandler}>
-                    Save
-                </button>
-            </div>
-        </div>
+            )}
+        </>
     );
 };
 

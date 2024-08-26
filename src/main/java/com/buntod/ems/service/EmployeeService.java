@@ -17,5 +17,6 @@ public interface EmployeeService {
     /** Update employee. */
     EmployeeDTO updateEmployee(Long employeeID, EmployeeDTO updatedEmployee);
 
+    /** Delate employee. */
     EmployeeDTO deleteEmployee(Long employeeID);
 }

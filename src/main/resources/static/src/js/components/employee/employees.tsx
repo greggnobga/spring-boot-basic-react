@@ -7,7 +7,6 @@ import { useAppDispatch, useAppSelector } from '$hooks/use-rtk';
 
 /** Action. */
 import { employeeListRequest } from '$store/feature/employee/list-slice';
-import { employeeDeleteRequest } from '$store/feature/employee/delete-slice';
 
 const EmployeeList = () => {
     /** Use selector. */
@@ -19,7 +18,7 @@ const EmployeeList = () => {
 
     /** Use effect. */
     useEffect(() => {
-        /** Check if is array and length is not equal to zero. */
+        /** Fetch employee on load. */
         dispatch(employeeListRequest());
     }, []);
 
@@ -34,7 +33,13 @@ const EmployeeList = () => {
 
     /** Delete employee handler. */
     const deleteEmployeeHandler = (id: number) => {
-        dispatch(employeeDeleteRequest({ id }));
+        /** Get employee details. */
+        const details = employees.filter((employee) => employee.id === id);
+
+        /** Navigate out. */
+        navigator('/delete-employee', {
+            state: { id, fName: details[0].firstName, lName: details[0].lastName, eAddress: details[0].email, action: 'delete' },
+        });
     };
 
     /** Update employee handler. */
