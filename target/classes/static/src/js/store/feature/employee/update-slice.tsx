@@ -16,6 +16,7 @@ type Employee = {
     firstName: string;
     lastName: string;
     email: string;
+    department_id: string;
     status: number;
 };
 
@@ -25,6 +26,7 @@ type InputEmployee = {
     firstName: string;
     lastName: string;
     email: string;
+    department_id: string;
 };
 
 /** Set inital state. */
@@ -35,6 +37,7 @@ const initialState: Employee = {
     firstName: '',
     lastName: '',
     email: '',
+    department_id: '',
 };
 
 /** Login request. */
@@ -43,7 +46,7 @@ export const employeeUpdateRequest = createAsyncThunk<any, InputEmployee, { reje
     async (inputData, { rejectWithValue }) => {
         try {
             /** Deconstruct input data. */
-            const { id, firstName, lastName, email } = inputData;
+            const { id, firstName, lastName, email, department_id } = inputData;
 
             /** Prepare form data. */
             let form_data = new FormData();
@@ -51,6 +54,7 @@ export const employeeUpdateRequest = createAsyncThunk<any, InputEmployee, { reje
             form_data.append('firstName', firstName as string);
             form_data.append('lastName', lastName as string);
             form_data.append('email', email as string);
+            form_data.append('departmentId', department_id as string);
 
             /** Request data from backend. */
             const { data, status } = await axios({
@@ -104,6 +108,7 @@ export const employeeUpdate = createSlice({
             state.firstName = action.payload.firstName;
             state.lastName = action.payload.lastName;
             state.email = action.payload.email;
+            state.department_id = action.payload.departmentId;
             state.status = action.payload.status;
         });
 
@@ -113,6 +118,7 @@ export const employeeUpdate = createSlice({
             state.firstName = action.payload.firstName;
             state.lastName = action.payload.lastName;
             state.email = action.payload.email;
+            state.department_id = action.payload.departmentId;
             state.status = action.payload.status;
         });
     },

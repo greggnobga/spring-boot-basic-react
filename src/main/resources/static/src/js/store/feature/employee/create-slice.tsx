@@ -15,6 +15,7 @@ type Employee = {
     firstName: string;
     lastName: string;
     email: string;
+    department_id: string;
     status: number;
 };
 
@@ -23,6 +24,7 @@ type InputEmployee = {
     firstName: string;
     lastName: string;
     email: string;
+    department_id: string;
 };
 
 /** Set inital state. */
@@ -32,6 +34,7 @@ const initialState: Employee = {
     firstName: '',
     lastName: '',
     email: '',
+    department_id: '',
 };
 
 /** Login request. */
@@ -40,7 +43,7 @@ export const employeeCreateRequest = createAsyncThunk<any, InputEmployee, { reje
     async (inputData, { rejectWithValue }) => {
         try {
             /** Deconstruct input data. */
-            const { firstName, lastName, email } = inputData;
+            const { firstName, lastName, email, department_id } = inputData;
 
             /** Prepare form data. */
             let form_data = new FormData();
@@ -48,6 +51,7 @@ export const employeeCreateRequest = createAsyncThunk<any, InputEmployee, { reje
             form_data.append('firstName', firstName as string);
             form_data.append('lastName', lastName as string);
             form_data.append('email', email as string);
+            form_data.append('departmentId', department_id as string);
 
             /** Request data from backend. */
             const { data, status } = await axios({
@@ -91,11 +95,11 @@ export const employeeCreate = createSlice({
     reducers: {},
     extraReducers: (builder) => {
         /** Detail request case. */
-        builder.CreateCase(employeeCreateRequest.pending, (state) => {
+        builder.addCase(employeeCreateRequest.pending, (state) => {
             state.loading = true;
         });
 
-        builder.CreateCase(employeeCreateRequest.fulfilled, (state, action: any) => {
+        builder.addCase(employeeCreateRequest.fulfilled, (state, action: any) => {
             state.loading = false;
             state.firstName = action.payload.firstName;
             state.lastName = action.payload.lastName;
@@ -103,7 +107,7 @@ export const employeeCreate = createSlice({
             state.status = action.payload.status;
         });
 
-        builder.CreateCase(employeeCreateRequest.rejected, (state, action: any) => {
+        builder.addCase(employeeCreateRequest.rejected, (state, action: any) => {
             state.loading = false;
             state.firstName = action.payload.firstName;
             state.lastName = action.payload.lastName;

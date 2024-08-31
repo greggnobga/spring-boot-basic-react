@@ -11,6 +11,7 @@ import Employees from '$components/employee/employees';
 import Employee from '$components/employee/employee';
 
 import Departments from '$components/departments/departments';
+import Department from '$components/departments/department';
 
 /** Main. */
 const App = () => {
@@ -25,13 +26,16 @@ const App = () => {
 
                     <Route path='/' element={<Layout />}>
                         <Route path='/employees' element={<Employees />} />
-                        <Route path='/add-employee' element={<Employee />} />
+                        <Route path='/create-employee' element={<Employee />} />
                         <Route path='/update-employee' element={<Employee />} />
                         <Route path='/delete-employee' element={<Employee />} />
                     </Route>
 
                     <Route path='/' element={<Layout />}>
                         <Route path='/departments' element={<Departments />} />
+                        <Route path='/create-department' element={<Department />} />
+                        <Route path='/update-department' element={<Department />} />
+                        <Route path='/delete-department' element={<Department />} />
                     </Route>
                 </Routes>
             </Scroll>

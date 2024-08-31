@@ -15,6 +15,8 @@ type Employee = {
     firstName: string;
     lastName: string;
     email: string;
+    departmentId: string;
+    departmentName: string;
 };
 
 /** Employee List type. */

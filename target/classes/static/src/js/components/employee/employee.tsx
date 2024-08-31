@@ -1,4 +1,5 @@
 /** Vendor. */
+import { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 /** Hooks. */
@@ -7,14 +8,31 @@ import { useAppDispatch, useAppSelector } from '$hooks/use-rtk';
 
 /** Action. */
 import { employeeListRequest } from '$store/feature/employee/list-slice';
-import { employeeAddRequest } from '$store/feature/employee/add-slice';
+import { employeeCreateRequest } from '$store/feature/employee/create-slice';
 import { employeeUpdateRequest } from '$store/feature/employee/update-slice';
 import { employeeDeleteRequest } from '$store/feature/employee/delete-slice';
 
+import { departmentListRequest } from '$store/feature/department/list-slice';
+
 const Employee = () => {
+    /** Use state. */
+    const [department_id, setDepartmentID] = useState('');
+
+    /** Use selector. */
+    const departmentList = useAppSelector((state) => state.departmentList);
+    const { departments } = departmentList;
+
+    /** Use effect. */
+    useEffect(() => {
+        /** Get all departments. */
+        if (departments.length === 0) {
+            dispatch(departmentListRequest());
+        }
+    }, [departments]);
+
     /** Use location. */
     const location = useLocation();
-    const { id, fName, lName, eAddress, action } = location.state || {};
+    const { id, fName, lName, eAddress, dId, action } = location.state || {};
 
     /** Map html element to validate hook. */
     const {
@@ -72,21 +90,22 @@ const Employee = () => {
         emailBlurHandler();
 
         /** Check if there is invalid input. */
-        if (!firstNameIsValid && !firstNameIsValid && !emailIsValid) {
+        if (!firstNameIsValid && !lastNameIsValid && !emailIsValid) {
             return;
         }
 
         /** Dispatch action. */
         if (action === 'update') {
-            await dispatch(employeeUpdateRequest({ id, firstName, lastName, email }));
+            await dispatch(employeeUpdateRequest({ id, firstName, lastName, email, department_id }));
         } else {
-            await dispatch(employeeAddRequest({ firstName, lastName, email }));
+            await dispatch(employeeCreateRequest({ firstName, lastName, email, department_id }));
         }
 
         /** Reset input. */
         firstNameInputReset();
         lastNameInputReset();
         emailInputReset();
+        setDepartmentID('Select Department');
 
         /** Update list. */
         await dispatch(employeeListRequest());
@@ -120,7 +139,7 @@ const Employee = () => {
         <>
             {action === 'delete' ? (
                 <div className='container mx-auto bg-rose-50 border border-rose-100 px-4 py-2'>
-                    <div className='flex flex-wrap flex-row items-center justify-center border border-green-500'>
+                    <div className='flex flex-wrap flex-col items-center justify-center'>
                         <p className='pt-6'>Are your sure you want to delete {fName + ' ' + lName}</p>
                         <div className='mt-6 flex items-center justify-center gap-x-6'>
                             <button type='button' className='text-sm font-semibold leading-6 text-gray-900' onClick={cancelHandler}>
@@ -129,7 +148,7 @@ const Employee = () => {
                             <button
                                 type='submit'
                                 className='rounded-md bg-rose-600 px-6 py-2 text-sm font-semibold text-white shadow-sm hover:bg-rose-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose-600'
-                                onClick={deleteHandler}>
+                                onClick={() => deleteHandler()}>
                                 Confirm
                             </button>
                         </div>
@@ -145,7 +164,7 @@ const Employee = () => {
                             </label>
                             <div className='mt-2'>
                                 <input
-                                    className={`block w-full rounded-md border-0 px-2 py-1.5 text-gray-900 shadow-sm placeholder:text-gray-400 focus:ring-0 focus:none sm:text-sm sm:leading-6 form-input ${
+                                    className={`block w-full rounded-md border-0 px-2 py-1.5 text-gray-900 shadow-sm placeholder:text-gray-400 focus:ring-0 focus:none sm:text-sm sm:leading-6 ${
                                         firstNameHasError ? 'border border-red-500' : ''
                                     }`}
                                     id='firstName'
@@ -156,7 +175,7 @@ const Employee = () => {
                                     onBlur={firstNameBlurHandler}
                                     autoComplete='off'
                                 />
-                                {firstNameHasError && <p className={`form-alert ${firstNameInputClasses}`}>Please enter a valid first name.</p>}
+                                {firstNameHasError && <p className={`${firstNameInputClasses}`}>Please enter a valid first name.</p>}
                             </div>
                         </div>
 
@@ -166,7 +185,7 @@ const Employee = () => {
                             </label>
                             <div className='mt-2'>
                                 <input
-                                    className={`block w-full rounded-md border-0 px-2 py-1.5 text-gray-900 shadow-sm placeholder:text-gray-400 focus:ring-0 focus:none sm:text-sm sm:leading-6 form-input ${
+                                    className={`block w-full rounded-md border-0 px-2 py-1.5 text-gray-900 shadow-sm placeholder:text-gray-400 focus:ring-0 focus:none sm:text-sm sm:leading-6 ${
                                         lastNameHasError ? 'border border-red-500' : ''
                                     }`}
                                     id='lastName'
@@ -177,7 +196,7 @@ const Employee = () => {
                                     onBlur={lastNameBlurHandler}
                                     autoComplete='off'
                                 />
-                                {lastNameHasError && <p className={`form-alert ${lastNameInputClasses}`}>Please enter a valid last name.</p>}
+                                {lastNameHasError && <p className={`${lastNameInputClasses}`}>Please enter a valid last name.</p>}
                             </div>
                         </div>
 
@@ -187,7 +206,7 @@ const Employee = () => {
                             </label>
                             <div className='mt-2'>
                                 <input
-                                    className={`block w-full rounded-md border-0 px-2 py-1.5 text-gray-900 shadow-sm placeholder:text-gray-400 focus:ring-0 focus:none sm:text-sm sm:leading-6 form-input ${
+                                    className={`block w-full rounded-md border-0 px-2 py-1.5 text-gray-900 shadow-sm placeholder:text-gray-400 focus:ring-0 focus:none sm:text-sm sm:leading-6 ${
                                         emailHasError ? 'border border-red-500' : ''
                                     }`}
                                     id='email'
@@ -198,8 +217,30 @@ const Employee = () => {
                                     onBlur={emailBlurHandler}
                                     autoComplete='off'
                                 />
-                                {emailHasError && <p className={`form-alert ${emailInputClasses}`}>Please enter a valid email.</p>}
+                                {emailHasError && <p className={`${emailInputClasses}`}>Please enter a valid email.</p>}
                             </div>
+                        </div>
+
+                        <div className='col-span-full'>
+                            <label htmlFor='departments' className='block text-sm font-medium leading-6 text-gray-900 pb-2'>
+                                Select Department
+                            </label>
+                            <select
+                                id='departments'
+                                name='departments'
+                                className='form-select appearance-none bg-no-repeat block w-full rounded-md border-0 px-2 py-2 text-gray-900 shadow-sm placeholder:text-gray-400 focus:ring-0 focus:none sm:text-sm sm:leading-6 bg-white'
+                                value={department_id ? department_id : dId}
+                                onChange={(e) => setDepartmentID(e.target.value)}>
+                                <option value='Select Department'>Select Department</option>
+                                {departments &&
+                                    departments.map((item) => {
+                                        return (
+                                            <option key={item.id} value={item.id}>
+                                                {item.departmentName}
+                                            </option>
+                                        );
+                                    })}
+                            </select>
                         </div>
                     </div>
 
@@ -209,8 +250,9 @@ const Employee = () => {
                         </button>
                         <button
                             type='submit'
-                            className='rounded-md bg-rose-600 px-6 py-2 text-sm font-semibold text-white shadow-sm hover:bg-rose-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose-600'
-                            onClick={submitHandler}>
+                            className='rounded-md bg-rose-600 px-6 py-2 text-sm font-semibold text-white shadow-sm hover:bg-rose-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-rose-600 disabled:bg-slate-50 disabled:text-slate-400'
+                            disabled={!formIsValid}
+                            onClick={() => submitHandler(event)}>
                             Save
                         </button>
                     </div>

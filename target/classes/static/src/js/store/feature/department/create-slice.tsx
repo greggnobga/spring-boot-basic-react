@@ -9,45 +9,41 @@ type Error<T> = {
     status?: number;
 };
 
-/** Employee type. */
-type Employee = {
+/** Department type. */
+type Department = {
     loading: boolean;
-    firstName: string;
-    lastName: string;
-    email: string;
+    departmentName: string;
+    departmentDescription: string;
     status: number;
 };
 
-/** Employee input type. */
-type InputEmployee = {
-    firstName: string;
-    lastName: string;
-    email: string;
+/** Department input type. */
+type InputDepartment = {
+    departmentName: string;
+    departmentDescription: string;
 };
 
 /** Set inital state. */
-const initialState: Employee = {
+const initialState: Department = {
     loading: false,
     status: 200,
-    firstName: '',
-    lastName: '',
-    email: '',
+    departmentName: '',
+    departmentDescription: '',
 };
 
 /** Login request. */
-export const employeeCreateRequest = createAsyncThunk<any, InputEmployee, { rejectValue: Error<any> }>(
-    'employee/create',
+export const departmentCreateRequest = createAsyncThunk<any, InputDepartment, { rejectValue: Error<any> }>(
+    'department/create',
     async (inputData, { rejectWithValue }) => {
         try {
             /** Deconstruct input data. */
-            const { firstName, lastName, email } = inputData;
+            const { departmentName, departmentDescription } = inputData;
 
             /** Prepare form data. */
             let form_data = new FormData();
 
-            form_data.append('firstName', firstName as string);
-            form_data.append('lastName', lastName as string);
-            form_data.append('email', email as string);
+            form_data.append('departmentName', departmentName as string);
+            form_data.append('departmentDescription', departmentDescription as string);
 
             /** Request data from backend. */
             const { data, status } = await axios({
@@ -55,12 +51,12 @@ export const employeeCreateRequest = createAsyncThunk<any, InputEmployee, { reje
                     'Content-Type': 'application/json',
                 },
                 method: 'POST',
-                url: `/api/employees`,
+                url: `/api/departments`,
                 data: form_data,
             });
 
             /** Return something. */
-            return { status, ...(data as unknown as Record<any, unknown>) };
+            return { status, data };
         } catch (error: any) {
             /** Capture error details */
             if (error.response) {
@@ -85,33 +81,31 @@ export const employeeCreateRequest = createAsyncThunk<any, InputEmployee, { reje
 );
 
 /** Export slice. */
-export const employeeCreate = createSlice({
-    name: 'employeeCreate',
+export const departmentCreate = createSlice({
+    name: 'departmentCreate',
     initialState: initialState,
     reducers: {},
     extraReducers: (builder) => {
         /** Detail request case. */
-        builder.CreateCase(employeeCreateRequest.pending, (state) => {
+        builder.addCase(departmentCreateRequest.pending, (state) => {
             state.loading = true;
         });
 
-        builder.CreateCase(employeeCreateRequest.fulfilled, (state, action: any) => {
+        builder.addCase(departmentCreateRequest.fulfilled, (state, action: any) => {
             state.loading = false;
-            state.firstName = action.payload.firstName;
-            state.lastName = action.payload.lastName;
-            state.email = action.payload.email;
+            state.departmentName = action.payload.departmentName;
+            state.departmentDescription = action.payload.departmentDescription;
             state.status = action.payload.status;
         });
 
-        builder.CreateCase(employeeCreateRequest.rejected, (state, action: any) => {
+        builder.addCase(departmentCreateRequest.rejected, (state, action: any) => {
             state.loading = false;
-            state.firstName = action.payload.firstName;
-            state.lastName = action.payload.lastName;
-            state.email = action.payload.email;
+            state.departmentName = action.payload.departmentName;
+            state.departmentDescription = action.payload.departmentDescription;
             state.status = action.payload.status;
         });
     },
 });
 
 /** Export something. */
-export default employeeCreate.reducer;
+export default departmentCreate.reducer;

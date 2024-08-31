@@ -7,10 +7,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.buntod.ems.dto.EmployeeDTO;
+import com.buntod.ems.entity.Department;
 import com.buntod.ems.entity.Employee;
 import com.buntod.ems.exception.ResourceExistException;
 import com.buntod.ems.exception.ResourceNotFoundException;
 import com.buntod.ems.mapper.EmployeeMapper;
+import com.buntod.ems.repository.DepartmentRepostory;
 import com.buntod.ems.repository.EmployeeRepository;
 import com.buntod.ems.service.EmployeeService;
 
@@ -20,10 +22,21 @@ public class EmployeeServiceImplementation implements EmployeeService {
     @Autowired
     private EmployeeRepository employeeRepository;
 
+    @Autowired
+    private DepartmentRepostory departmentRepostory;
+
     @Override
     public EmployeeDTO createEmployee(EmployeeDTO employeeDTO) {
         /** Map employee. */
         Employee employee = EmployeeMapper.mapToEmployee(employeeDTO);
+
+        /** Get department. */
+        Department department = departmentRepostory.findById(employeeDTO.getDepartmentId())
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Department doest not exist with the id: " + employeeDTO.getDepartmentId()));
+
+        /** Set department to employee. */
+        employee.setDepartment(department);
 
          /** Check the respository if email exist. */
          boolean present = employeeRepository.findByEmail(employee.getEmail()).isPresent();
@@ -63,6 +76,14 @@ public class EmployeeServiceImplementation implements EmployeeService {
         /** Check if employee exist else throw exception. */
         Employee employee = employeeRepository.findById(employeeID)
                 .orElseThrow(() -> new ResourceNotFoundException("Employee not found: " + employeeID));
+
+        /** Get department. */
+        Department department = departmentRepostory.findById(updatedEmployee.getDepartmentId())
+                .orElseThrow(() -> new ResourceNotFoundException(
+                        "Department doest not exist with the id: " + updatedEmployee.getDepartmentId()));
+
+        /** Set department to employee. */
+        employee.setDepartment(department);
 
         /** If found set the updated detail. */
         employee.setFirstName(updatedEmployee.getFirstName());
